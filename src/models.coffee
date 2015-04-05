@@ -20,13 +20,18 @@ FormRenderer.Models.ResponseField = Backbone.DeepModel.extend
 
     # Presence is a special-case, since it will stop us from running any other validators
     if !@hasValue()
-      @errors.push(FormRenderer.errors.blank) if @get('required')
-      return
+      @errors.push(FormRenderer.errors.blank) if @isRequired()
+    else
+      # If value is present, run all the other validators
+      for validatorName, validator of @validators
+        errorKey = validator.validate(@)
+        @errors.push(FormRenderer.errors[errorKey]) if errorKey
 
-    # If value is present, run all the other validators
-    for validatorName, validator of @validators
-      errorKey = validator.validate(@)
-      @errors.push(FormRenderer.errors[errorKey]) if errorKey
+    @set 'error', @getError()
+    @form_renderer.trigger('afterValidate afterValidate:one')
+
+  isRequired: ->
+    @get('required')
 
   getError: ->
     @errors.join('. ') if @errors.length > 0
@@ -119,7 +124,9 @@ FormRenderer.Models.NonInputResponseField = FormRenderer.Models.ResponseField.ex
 FormRenderer.Models.ResponseFieldIdentification = FormRenderer.Models.ResponseField.extend
   field_type: 'identification'
   validators: [FormRenderer.Validators.IdentificationValidator]
-  hasValue: -> true # always pass to IdentificationValidator above
+  isRequired: -> true
+  hasValue: ->
+    @hasValueHashKey ['email', 'name']
 
 FormRenderer.Models.ResponseFieldMapMarker = FormRenderer.Models.ResponseField.extend
   field_type: 'map_marker'

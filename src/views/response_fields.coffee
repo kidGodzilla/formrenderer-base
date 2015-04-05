@@ -1,6 +1,10 @@
 FormRenderer.Views.ResponseField = Backbone.View.extend
   field_type: undefined
   className: 'fr_response_field'
+  events:
+    'blur input, textarea': '_onBlur'
+    'input input, textarea': '_onInput'
+    'click input': '_onInput'
 
   initialize: (options) ->
     @form_renderer = options.form_renderer
@@ -11,6 +15,7 @@ FormRenderer.Views.ResponseField = Backbone.View.extend
       @showLabels = options.showLabels
 
     @model = options.model
+    @listenTo @model, 'afterValidate', @render
     @$el.addClass "fr_response_field_#{@field_type}"
 
   getDomId: ->
@@ -21,6 +26,21 @@ FormRenderer.Views.ResponseField = Backbone.View.extend
       @$el.show()
     else
       @$el.hide()
+
+  # Run validations on blur, only if there is present text
+  _onBlur: (e) ->
+    if @model.hasValue()
+      # Unless the new focus target is still inside of this field...
+      unless e.relatedTarget && $(e.relatedTarget).closest(@$el)[0]
+        @model.validate()
+
+  # Run validations on change if there are errors
+  _onInput: ->
+    if @model.errors.length > 0
+      @model.validate()
+
+  focus: ->
+    @$el.find(':input:eq(0)').focus()
 
   render: ->
     @$el[if @model.getError() then 'addClass' else 'removeClass']('error')
@@ -37,7 +57,7 @@ FormRenderer.Views.NonInputResponseField = FormRenderer.Views.ResponseField.exte
 
 FormRenderer.Views.ResponseFieldPrice = FormRenderer.Views.ResponseField.extend
   field_type: 'price'
-  events:
+  events: _.extend {}, FormRenderer.Views.ResponseField::events,
     'blur [data-rv-input="model.value.cents"]': 'formatCents'
 
   formatCents: (e) ->
@@ -47,7 +67,7 @@ FormRenderer.Views.ResponseFieldPrice = FormRenderer.Views.ResponseField.extend
 
 FormRenderer.Views.ResponseFieldTable = FormRenderer.Views.ResponseField.extend
   field_type: 'table'
-  events:
+  events: _.extend {}, FormRenderer.Views.ResponseField::events,
     'click .js-add-row': 'addRow'
     'click .js-remove-row': 'removeRow'
 
@@ -99,7 +119,7 @@ FormRenderer.Views.ResponseFieldTable = FormRenderer.Views.ResponseField.extend
 
 FormRenderer.Views.ResponseFieldFile = FormRenderer.Views.ResponseField.extend
   field_type: 'file'
-  events:
+  events: _.extend {}, FormRenderer.Views.ResponseField::events,
     'click [data-fr-remove-file]': 'doRemove'
   render: ->
     FormRenderer.Views.ResponseField::render.apply @, arguments
@@ -161,7 +181,7 @@ FormRenderer.Views.ResponseFieldFile = FormRenderer.Views.ResponseField.extend
 
 FormRenderer.Views.ResponseFieldMapMarker = FormRenderer.Views.ResponseField.extend
   field_type: 'map_marker'
-  events:
+  events: _.extend {}, FormRenderer.Views.ResponseField::events,
     'click .fr_map_cover': 'enable'
     'click [data-fr-clear-map]': 'disable'
 
