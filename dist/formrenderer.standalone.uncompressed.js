@@ -582,16 +582,17 @@
 (function() {
   FormRenderer.errors = {
     blank: "This field can't be blank.",
-    invalid_date: 'Please enter a valid date.',
-    invalid_email: 'Please enter a valid email address.',
-    invalid_integer: 'Please enter a whole number.',
-    invalid_number: 'Please enter a valid number.',
-    invalid_price: 'Please enter a valid price.',
-    invalid_time: 'Please enter a valid time.',
-    too_large: 'Your answer is too large.',
-    too_long: 'Your answer is too long.',
-    too_short: 'Your answer is too short.',
-    too_small: 'Your answer is too small.'
+    identification: "Please enter your name and email address.",
+    date: 'Please enter a valid date.',
+    email: 'Please enter a valid email address.',
+    integer: 'Please enter a whole number.',
+    number: 'Please enter a valid number.',
+    price: 'Please enter a valid price.',
+    time: 'Please enter a valid time.',
+    large: 'Your answer is too large.',
+    long: 'Your answer is too long.',
+    short: 'Your answer is too short.',
+    small: 'Your answer is too small.'
   };
 
 }).call(this);
@@ -670,7 +671,7 @@
       day = parseInt(model.get('value.day'), 10) || 0;
       month = parseInt(model.get('value.month'), 10) || 0;
       if (!((year > 0) && ((0 < day && day <= 31)) && ((0 < month && month <= 12)))) {
-        return 'invalid_date';
+        return 'date';
       }
     }
   };
@@ -681,7 +682,7 @@
   FormRenderer.Validators.EmailValidator = {
     validate: function(model) {
       if (!model.get('value').match('@')) {
-        return 'invalid_email';
+        return 'email';
       }
     }
   };
@@ -692,9 +693,9 @@
   FormRenderer.Validators.IdentificationValidator = {
     validate: function(model) {
       if (!model.get('value.email') || !model.get('value.name')) {
-        return 'blank';
+        return 'identification';
       } else if (!model.get('value.email').match('@')) {
-        return 'invalid_email';
+        return 'email';
       }
     }
   };
@@ -708,7 +709,7 @@
         return;
       }
       if (!model.get('value').match(/^-?\d+$/)) {
-        return 'invalid_integer';
+        return 'integer';
       }
     }
   };
@@ -726,9 +727,9 @@
       max = parseInt(model.get('field_options.maxlength'), 10) || void 0;
       count = FormRenderer.getLength(model.getLengthValidationUnits(), model.get('value'));
       if (min && count < min) {
-        return 'too_short';
+        return 'short';
       } else if (max && count > max) {
-        return 'too_long';
+        return 'long';
       }
     }
   };
@@ -746,9 +747,9 @@
       max = model.get('field_options.max') && parseFloat(model.get('field_options.max'));
       value = model.field_type === 'price' ? parseFloat("" + (model.get('value.dollars') || 0) + "." + (model.get('value.cents') || 0)) : parseFloat(model.get('value').replace(/,/g, ''));
       if (min && value < min) {
-        return 'too_small';
+        return 'small';
       } else if (max && value > max) {
-        return 'too_large';
+        return 'large';
       }
     }
   };
@@ -762,7 +763,7 @@
       value = model.get('value');
       value = value.replace(/,/g, '').replace(/-/g, '').replace(/^\+/, '');
       if (!value.match(/^-?\d*(\.\d+)?$/)) {
-        return 'invalid_number';
+        return 'number';
       }
     }
   };
@@ -783,7 +784,7 @@
       if (!_.every(values, function(x) {
         return x.match(/^-?\d+$/);
       })) {
-        return 'invalid_price';
+        return 'price';
       }
     }
   };
@@ -798,7 +799,7 @@
       minutes = parseInt(model.get('value.minutes'), 10) || 0;
       seconds = parseInt(model.get('value.seconds'), 10) || 0;
       if (!(((1 <= hours && hours <= 12)) && ((0 <= minutes && minutes <= 60)) && ((0 <= seconds && seconds <= 60)))) {
-        return 'invalid_time';
+        return 'time';
       }
     }
   };

@@ -1,6 +1,6 @@
 FormRenderer.Validators.IdentificationValidator =
   validate: (model) ->
     if !model.get('value.email') || !model.get('value.name')
-      'blank'
+      'identification'
     else if !model.get('value.email').match('@')
-      'invalid_email'
+      'email'
