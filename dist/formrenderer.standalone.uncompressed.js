@@ -825,8 +825,12 @@
         return this.listenTo(this, 'change:value', this.calculateLength);
       }
     },
-    validate: function() {
-      var errorKey, validator, validatorName, _ref;
+    validate: function(opts) {
+      var errorIs, errorKey, errorWas, validator, validatorName, _ref;
+      if (opts == null) {
+        opts = {};
+      }
+      errorWas = this.get('error');
       this.errors = [];
       if (!this.isVisible) {
         return;
@@ -845,7 +849,12 @@
           }
         }
       }
-      this.set('error', this.getError());
+      errorIs = this.getError();
+      if (opts.clearOnly && errorWas !== errorIs) {
+        this.set('error', null);
+      } else {
+        this.set('error', this.getError());
+      }
       return this.form_renderer.trigger('afterValidate afterValidate:one');
     },
     isRequired: function() {
@@ -1672,7 +1681,9 @@
     },
     _onInput: function() {
       if (this.model.errors.length > 0) {
-        return this.model.validate();
+        return this.model.validate({
+          clearOnly: true
+        });
       }
     },
     focus: function() {

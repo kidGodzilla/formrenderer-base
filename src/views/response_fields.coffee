@@ -36,7 +36,7 @@ FormRenderer.Views.ResponseField = Backbone.View.extend
   # Run validations on change if there are errors
   _onInput: ->
     if @model.errors.length > 0
-      @model.validate()
+      @model.validate(clearOnly: true)
 
   focus: ->
     @$el.find(':input:eq(0)').focus()

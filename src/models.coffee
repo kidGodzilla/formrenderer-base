@@ -13,7 +13,8 @@ FormRenderer.Models.ResponseField = Backbone.DeepModel.extend
     if @hasLengthValidations()
       @listenTo @, 'change:value', @calculateLength
 
-  validate: ->
+  validate: (opts = {}) ->
+    errorWas = @get('error')
     @errors = []
 
     return unless @isVisible
@@ -27,7 +28,13 @@ FormRenderer.Models.ResponseField = Backbone.DeepModel.extend
         errorKey = validator.validate(@)
         @errors.push(FormRenderer.errors[errorKey]) if errorKey
 
-    @set 'error', @getError()
+    errorIs = @getError()
+
+    if opts.clearOnly && errorWas != errorIs
+      @set 'error', null
+    else
+      @set 'error', @getError()
+
     @form_renderer.trigger('afterValidate afterValidate:one')
 
   isRequired: ->
