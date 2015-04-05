@@ -354,6 +354,18 @@ Fixtures.FormRendererOptions = {
       }
     };
   },
+  KITCHEN_SINK_REQ: function(){
+    return {
+      project_id: 1,
+      response_fields: _.map(Fixtures.KITCHEN_SINK_FORM, function(rf){
+        return _.extend({}, rf, { required: true });
+      }),
+      response: {
+        id: 'xxx',
+        responses: {}
+      }
+    };
+  },
   SIZES: function() {
     return {
       project_id: 1,
