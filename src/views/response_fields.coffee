@@ -3,8 +3,6 @@ FormRenderer.Views.ResponseField = Backbone.View.extend
   className: 'fr_response_field'
   events:
     'blur input, textarea': '_onBlur'
-    'input input, textarea': '_onInput'
-    'click input': '_onInput'
 
   initialize: (options) ->
     @form_renderer = options.form_renderer
@@ -16,6 +14,7 @@ FormRenderer.Views.ResponseField = Backbone.View.extend
 
     @model = options.model
     @listenTo @model, 'afterValidate', @render
+    @listenTo @model, 'change', @_onInput
     @$el.addClass "fr_response_field_#{@field_type}"
 
   getDomId: ->

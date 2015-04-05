@@ -1639,9 +1639,7 @@
     field_type: void 0,
     className: 'fr_response_field',
     events: {
-      'blur input, textarea': '_onBlur',
-      'input input, textarea': '_onInput',
-      'click input': '_onInput'
+      'blur input, textarea': '_onBlur'
     },
     initialize: function(options) {
       this.form_renderer = options.form_renderer;
@@ -1652,6 +1650,7 @@
       }
       this.model = options.model;
       this.listenTo(this.model, 'afterValidate', this.render);
+      this.listenTo(this.model, 'change', this._onInput);
       return this.$el.addClass("fr_response_field_" + this.field_type);
     },
     getDomId: function() {
